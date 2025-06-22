@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Study Planner</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #1e1e1e;
+      padding: 20px;
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      color: #00e5ff;
+    }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      padding: 20px;
+    }
+    .box {
+      background-color: #1e1e1e;
+      border-radius: 15px;
+      padding: 20px;
+      width: 45%;
+      margin-bottom: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.6);
+    }
+    h2 {
+      color: #00acc1;
+    }
+    input[type="text"] {
+      width: 70%;
+      padding: 8px;
+      border: none;
+      border-radius: 8px;
+    }
+    button {
+      padding: 8px 12px;
+      margin-left: 5px;
+      border: none;
+      border-radius: 8px;
+      background-color: #2196f3;
+      color: white;
+      cursor: pointer;
+    }
+    ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    li {
+      background-color: #2a2a2a;
+      margin: 5px 0;
+      padding: 8px;
+      border-radius: 5px;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+      padding: 10px;
+      background-color: #1c1c1c;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      resize: none;
+    }
+  </style>
+</head>
+<body>
+
+  <header>📘 Study Planner Web</header>
+
+  <div class="container">
+
+    <!-- Tasks -->
+    <div class="box">
+      <h2>📝 Add Task</h2>
+      <input type="text" id="taskInput" placeholder="Enter your task here..." />
+      <button onclick="addTask()">Add</button>
+      <ul id="taskList"></ul>
+    </div>
+
+    <!-- Completed -->
+    <div class="box">
+      <h2>✅ Completed Tasks</h2>
+      <ul id="completedList">
+        <li>Completed tasks will appear here</li>
+      </ul>
+    </div>
+
+    <!-- AI Chatbot -->
+    <div class="box">
+      <h2>🤖 AI Study Assistant</h2>
+      <textarea id="chatDisplay" readonly>Ask me anything while studying...</textarea>
+      <input type="text" id="chatInput" placeholder="Ask a question..." />
+      <button onclick="askAI()">Ask</button>
+    </div>
+
+    <!-- Timer -->
+    <div class="box">
+      <h2>⏳ Pomodoro Timer</h2>
+      <p id="timerDisplay" style="font-size: 24px;">25:00</p>
+      <button onclick="startPomodoro()">Start Study</button>
+      <button onclick="resetPomodoro()">Reset</button>
+    </div>
+
+  </div>
+
+  <script>
+    // Task management
+    function addTask() {
+      const taskInput = document.getElementById("taskInput");
+      const taskList = document.getElementById("taskList");
+      if (taskInput.value.trim()) {
+        const li = document.createElement("li");
+        li.innerHTML = taskInput.value + ' <button onclick="completeTask(this)">✔</button>';
+        taskList.appendChild(li);
+        taskInput.value = "";
+      }
+    }
+
+    function completeTask(btn) {
+      const li = btn.parentNode;
+      btn.remove();
+      document.getElementById("completedList").appendChild(li);
+    }
+
+    // Pomodoro timer
+    let timer;
+    let timeLeft = 1500;
+
+    function startPomodoro() {
+      clearInterval(timer);
+      timer = setInterval(() => {
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          alert("Time's up! Take a 5-minute break.");
+          resetPomodoro();
+        } else {
+          timeLeft--;
+          const minutes = Math.floor(timeLeft / 60);
+          const seconds = timeLeft % 60;
+          document.getElementById("timerDisplay").textContent = 
+            `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+      }, 1000);
+    }
+
+    function resetPomodoro() {
+      clearInterval(timer);
+      timeLeft = 1500;
+      document.getElementById("timerDisplay").textContent = "25:00";
+    }
+
+    // AI Chatbot (Groq)
+    function askAI() {
+      const input = document.getElementById("chatInput").value;
+      const display = document.getElementById("chatDisplay");
+      if (!input.trim()) return;
+      display.value += "\n🧑 You: " + input;
+      fetch('/chat', {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({prompt: input})
+      })
+      .then(res => res.json())
+      .then(data => {
+        display.value += "\n🤖 AI: " + data.response;
+        document.getElementById("chatInput").value = "";
+      });
+    }
+  </script>
+
+</body>
+</html>

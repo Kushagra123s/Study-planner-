@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 import requests
+import os
 
 app = Flask(__name__)
 
@@ -37,6 +38,9 @@ def chat():
     else:
         return jsonify({"response": f"Error: {res.text}"}), 500
 
-if __name__ == "__main__":
-    app.run(host='192.168.1.7', port=5000, debug=True)
+
+if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port, debug=True)
+
 

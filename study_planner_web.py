@@ -1,12 +1,15 @@
 from flask import Flask, render_template, request, jsonify
 import requests
 import os
-import dotenv
-env_vars = dotenv.dotenv_values(".env")
+from dotenv import load_dotenv  # 🔄 updated this line
+
+load_dotenv()  # 🔥 load .env file directly
+
 app = Flask(__name__)
 
-GROQ_API_KEY = env_vars.get("GROQ_API_KEY")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")  # ✅ pulled from environment
 GROQ_MODEL = "llama3-70b-8192"
+
 
 @app.route("/")
 def index():

@@ -4,7 +4,7 @@ import os
 
 app = Flask(__name__)
 
-GROQ_API_KEY = "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"
+GROQ_API_KEY = "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"
 GROQ_MODEL = "llama3-70b-8192"
 
 @app.route("/")

@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request, jsonify
 import requests
 import os
-
+import dotenv
+env_vars = dotenv.dotenv_values(".env")
 app = Flask(__name__)
 
-GROQ_API_KEY = "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"
+GROQ_API_KEY = env_vars.get("GROQ_API_KEY")
 GROQ_MODEL = "llama3-70b-8192"
 
 @app.route("/")
